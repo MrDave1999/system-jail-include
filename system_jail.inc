@@ -90,7 +90,7 @@ stock ShowPlayersInJail(playerid)
 	PlayerPlaySound(playerid, 1139, 0, 0, 0);
 }
 
-stock GetPlayerTimeInJail(playerid, &minutes, &seconds)
+stock GetPlayerTimeInJail(playerid, &minutes = 0, &seconds = 0)
 {
     GetPlayerPositionInJail(playerid) //Macro
     minutes = Jail[position][MINUTES_X]-1;
