@@ -65,7 +65,7 @@ public OnPlayerLeaveJail(playerid)
 ```pawn
 public OnPlayerComplyOneMinute(playerid, const minutes)
 {
-	printf("El ID: %d cumplió un %d minutos de cárcel", playerid, minutes);
+	printf("El ID: %d le falta %d minutos de cárcel", playerid, minutes);
 	return 1;
 }
 ```
