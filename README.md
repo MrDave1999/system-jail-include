@@ -5,6 +5,8 @@ Además de eso, el include le da al jugador una posición (x, y, z) + un interio
 Así que no necesitas preocuparte sí los jugadores de la cárcel están juntos, porqué el include mismo le asigna un mundo virtual diferente a cada uno de ellos.
 Sí no te gusta el lugar de la cárcel que proporciona el include, usted mismo lo puede cambiar con el callback `OnPlayerEnterJail`.
 
+En los ejemplos se usará el procesador de comandos [Pawn.CMD](https://github.com/urShadow/Pawn.CMD/releases) y para lectura de datos [sscanf](https://github.com/maddinat0r/sscanf).
+
 ## Instalación
 
 Usted debe agregar este archivo `system_jail.inc` en el directorio /pawno/include. También deberá incluir la librería en su modo de juego.
@@ -24,7 +26,7 @@ El include `system_jail.inc` tiene una cantidad máxima de jugadores en la cárc
 
 - `OnPlayerEnterJail` = Es invocado cuando un jugador entra a la cárcel.
 
-**Ejemplo:**:
+**Ejemplo:**
 ```pawn
 public OnPlayerEnterJail(playerid, const minutes)
 {
@@ -33,6 +35,21 @@ public OnPlayerEnterJail(playerid, const minutes)
 	return 1;
 }
 ```
+También puedes detectar sí el jugador tiene un tiempo específico o no. Con el siguiente código de ejemplo:
+```pawn
+public OnPlayerEnterJail(playerid, const minutes)
+{
+	if(minutes == NO_TIME)
+	{
+	    printf("Entraste a la cárcel de manera definitiva");
+		return 1;
+	}
+	printf("El ID: %d entró a la cárcel", playerid);
+	printf("En %d minutos saldrá de la cárcel", minutes);
+	return 1;
+}
+```
+
 Usted también puede agregar una nueva posición de cárcel para ese jugador, no necesariamente debes usar la que viene por defecto en el include.
 El mundo virtual del jugador no se necesita asignarlo porqué el include lo hace por ti.
 
@@ -42,6 +59,11 @@ public OnPlayerEnterJail(playerid, const minutes)
 {
 	SetPlayerPos(playerid, 2125.4805,1584.6116,20.3906);
 	SetPlayerInterior(playerid, 0);
+	if(minutes == NO_TIME)
+	{
+	    printf("Entraste a la cárcel de manera definitiva");
+		return 1;
+	}
 	printf("El ID: %d entró a la cárcel", playerid);
 	printf("En %d minutos saldrá de la cárcel", minutes);
 	return 1;
@@ -50,7 +72,7 @@ public OnPlayerEnterJail(playerid, const minutes)
 
 - `OnPlayerLeaveJail` = Es invocado cuando un jugador sale de la cárcel.
 
-**Ejemplo:**:
+**Ejemplo:**
 ```pawn
 public OnPlayerLeaveJail(playerid)
 {
@@ -61,7 +83,7 @@ public OnPlayerLeaveJail(playerid)
 
 - `OnPlayerComplyOneMinute` = Es invocado cada vez que el jugador cumple un minuto de cárcel.
 
-**Ejemplo:**:
+**Ejemplo:**
 ```pawn
 public OnPlayerComplyOneMinute(playerid, const minutes)
 {
@@ -70,11 +92,52 @@ public OnPlayerComplyOneMinute(playerid, const minutes)
 }
 ```
 
+## Macros
+
+- `IsPlayerInJail` = Esta macro detecta sí el jugador está en la cárcel o no.
+
+**Ejemplo:** 
+```pawn
+public OnPlayerCommandReceived(playerid, cmd[], params[], flags)
+{
+	if(IsPlayerInJail(playerid))
+	{
+	    printf("El ID: %d no puede usar comandos", playerid);
+	    return 0;
+	}
+	return 1;
+}
+```
+
+- `GetUsersInJail()` = Esta te servirá para saber cuántos jugadores hay en la cárcel.
+
+**Ejemplo:** 
+```pawn
+cmd:totaljail(playerid)
+{
+	printf("Total de jugadores en la cárcel: %d", GetUsersInJail());
+	return 1;
+}
+```
+
+- `GetPlayerPositionInJail` = Esta macro te permitará saber la posición en la que entró el jugador a la cárcel.
+
+**Ejemplo:**
+```pawn
+cmd:position(playerid)
+{
+    GetPlayerPositionInJail playerid;
+	printf("ID: %d se encuentra en la posición: %d", playerid, position+1);
+	return 1;
+}
+```
+La variable `position` es declarada de manera automática, así que no necesitas hacerlo tú.
+
 ## Funciones
 
 - `GetPlayerTimeInJail` = Esta función devuelve la cantidad total de segundos que le falta al jugador para salir de la cárcel. Además de eso, también se puede obtener el tiempo de forma separada (minutos y segundos).
 
-**Ejemplo 1:** [Pawn.CMD](https://github.com/urShadow/Pawn.CMD/releases)
+**Ejemplo 1:** 
 ```pawn
 cmd:time(playerid)
 {
@@ -83,7 +146,7 @@ cmd:time(playerid)
 }
 ```
 
-**Ejemplo 2:** [Pawn.CMD](https://github.com/urShadow/Pawn.CMD/releases)
+**Ejemplo 2:** 
 ```pawn
 cmd:time(playerid)
 {
@@ -98,7 +161,7 @@ cmd:time(playerid)
 
 - `PutPlayerInJail` = Esta función pone al jugador hacia la cárcel con un tiempo (en minutos) determinado.
 
-**Ejemplo:** [Pawn.CMD](https://github.com/urShadow/Pawn.CMD/releases)
+**Ejemplo:** 
 ```pawn
 cmd:jail(playerid)
 {
@@ -106,10 +169,18 @@ cmd:jail(playerid)
 	return 1;
 }
 ```
+Con la función `PutPlayerInJail` también puedes omitir el último parámetro y esto hará que el tiempo de cárcel sea ilimitado para el jugador.
+```pawn
+cmd:jail(playerid)
+{
+	PutPlayerInJail(playerid);
+	return 1;
+}
+```
 
 - `RemovePlayerJail` = Esta función elimina a un jugador de la cárcel.
 
-**Ejemplo:** [Pawn.CMD](https://github.com/urShadow/Pawn.CMD/releases)
+**Ejemplo:** 
 ```pawn
 cmd:unjail(playerid)
 {
@@ -118,35 +189,9 @@ cmd:unjail(playerid)
 }
 ```
 
-- `IsPlayerInJail` = Esta función detecta sí el jugador está en la cárcel o no.
-
-**Ejemplo:** [Pawn.CMD](https://github.com/urShadow/Pawn.CMD/releases)
-```pawn
-public OnPlayerCommandReceived(playerid, cmd[], params[], flags)
-{
-	if(IsPlayerInJail(playerid))
-	{
-	    printf("El ID: %d no puede usar comandos", playerid);
-	    return 0;
-	}
-	return 1;
-}
-```
-
-- `GetUsersInJail()` = Esto en realidad no es una función como tal, sino una constante definida con la directiva `#define`; pero te sirve para saber cuántos jugadores hay en la cárcel.
-
-**Ejemplo:** [Pawn.CMD](https://github.com/urShadow/Pawn.CMD/releases)
-```pawn
-cmd:totaljail(playerid)
-{
-	printf("Total de jugadores en la cárcel: %d", GetUsersInJail());
-	return 1;
-}
-```
-
 - `ShowPlayersInJail` = Esta función mostrará un menú de todos los jugadores que estén en la cárcel.
 
-**Ejemplo:** [Pawn.CMD](https://github.com/urShadow/Pawn.CMD/releases)
+**Ejemplo:** 
 ```pawn
 cmd:encarcelados(playerid)
 {
@@ -156,6 +201,9 @@ cmd:encarcelados(playerid)
 ```
 En el servidor debería salir así el menú:
 [![system_jail](https://i.imgur.com/dS8x7QW.png)](https://github.com/MrDave1999)
+
+O así también, sí es que hay jugadores en la cárcel sin ningún tiempo definido.
+[![system_jail](https://i.imgur.com/HDmvYa3.png)](https://github.com/MrDave1999)
 
 ## Uso
 
