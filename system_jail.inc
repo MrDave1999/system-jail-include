@@ -15,7 +15,7 @@
 
 #define GetUsersInJail()        UsersInJail
 #define IsPlayerInJail(%0)      (GetPlayerTeam(%0) == IN_JAIL)
-#define GetPlayerPositionInJail%0; new position = 0; for(; position < UsersInJail; ++position) if((%0) == Jail[position][USER_ID_JAIL])break;
+#define GetPlayerPositionInJail%0; new position = 0; for(; position != UsersInJail; ++position) if((%0) == Jail[position][USER_ID_JAIL])break;
 
 //Forward declarations
 forward OnPlayerEnterJail(playerid, const minutes);
@@ -84,7 +84,7 @@ stock ShowPlayersInJail(playerid)
 	new title[31];
 	new name[MAX_PLAYER_NAME];
 	strcat(string, "Nombre\tID\tTiempo Faltante\n");
-	for(new i = 0; i < UsersInJail; ++i)
+	for(new i = 0; i != UsersInJail; ++i)
 	{
 	    GetPlayerName(Jail[i][USER_ID_JAIL], name, sizeof(name));
 		if(Jail[i][MINUTES_X] == NO_TIME)
@@ -126,7 +126,7 @@ RemovePlayerJail(playerid)
 	SetPlayerTeam(playerid, NO_TEAM);
     OnPlayerLeaveJail(playerid);
     GetPlayerPositionInJail playerid; 
-	for(new i = position+1; i < UsersInJail; ++i)
+	for(new i = position+1; i != UsersInJail; ++i)
 	{
 	    Jail[i-1][USER_ID_JAIL] = Jail[i][USER_ID_JAIL];
 	    Jail[i-1][MINUTES_X] = Jail[i][MINUTES_X];
@@ -139,7 +139,7 @@ RemovePlayerJail(playerid)
 
 timer TimeJail[1000]()
 {
-	for(new i = 0; i < UsersInJail; ++i)
+	for(new i = 0; i != UsersInJail; ++i)
 	{
 	    if(Jail[i][MINUTES_X] == NO_TIME) continue;
 		if(--Jail[i][SECONDS_X] == 0)
